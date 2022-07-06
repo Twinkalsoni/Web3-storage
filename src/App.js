@@ -1,23 +1,31 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
 
-function App() {
+import { Web3Storage } from 'web3.storage';
+const apiToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweEI2OTZhN0FkYzc2OTM4RGYwQWE2ZDNhQjAwOTFjRWFGMkREM0Q1ZTkiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NTcwOTc2ODE2OTksIm5hbWUiOiJBUEkifQ.qb2AziYFbLOEDH3_l4TqiC2aC739psoyRKL44csPsOw"
+const client = new Web3Storage({ token: apiToken });
+
+const App = () => {
+
+  const [File, setFile] = useState("");
+  async function storeFiles() {
+    const fileInput = document.querySelector("input")
+    const rootCid = await client.put(fileInput.files)
+    const res = await client.get(rootCid)
+    const files = await res.files()
+    const url = URL.createObjectURL(files[0]);
+    setFile(url);
+  }
+  storeFiles()
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Web3 storage</h1>
+      <input type="file" onChange={storeFiles} />
+      {
+        File && (
+          <img src={File} width="600px" />
+        )
+      }
     </div>
   );
 }
